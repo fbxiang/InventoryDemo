@@ -26,8 +26,13 @@ namespace UniInventory.Registry {
             return newItem;
         }
 
+        // constructor protected so it is not called elsewhere
         protected ItemRegistry() { }
 
+        /// <summary>
+        /// Register a new item
+        /// </summary>
+        /// <param name="item">the item to register</param>
         public void RegisterItem(Item item)
         {
             if (items.ContainsKey(item.id)) {
@@ -37,6 +42,12 @@ namespace UniInventory.Registry {
             items[item.id] = item;
         }
 
+
+        /// <summary>
+        /// Get item with id
+        /// </summary>
+        /// <param name="id">the id of the item</param>
+        /// <returns>the item to get or null</returns>
         public Item GetItem(int id)
         {
             if (id < 0 || id >= items.Count)
@@ -47,6 +58,9 @@ namespace UniInventory.Registry {
             return items[id];
         }
 
+        /// <summary>
+        /// Singleton
+        /// </summary>
         public static ItemRegistry Instance
         {
             get { return instance; }
