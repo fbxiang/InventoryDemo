@@ -6,6 +6,77 @@ using System.Linq;
 
 namespace UniInventory.Items
 {
+    [System.Serializable]
+    public struct IntBranch
+    {
+        public string key;
+        public int value;
+    }
+    [System.Serializable]
+    public struct StringBranch
+    {
+        public string key;
+        public string value;
+    }
+    [System.Serializable]
+    public struct DoubleBranch
+    {
+        public string key;
+        public double value;
+    }
+    [System.Serializable]
+    public struct IntArrayBranch
+    {
+        public string key;
+        public List<int> value;
+    }
+    [System.Serializable]
+    public struct TreeBranch
+    {
+        public string key;
+        public InfoTreeInitializationObject value;
+    }
+
+    [System.Serializable]
+    public class InfoTreeInitializationObject
+    {
+        public List<IntBranch> IntValues = new List<IntBranch>();
+        public List<StringBranch> StringValues = new List<StringBranch>();
+        public List<DoubleBranch> DoubleValues = new List<DoubleBranch>();
+        public List<IntArrayBranch> IntArrayValues = new List<IntArrayBranch>();
+        public List<TreeBranch> TreeValues = new List<TreeBranch>();
+
+        /// <summary>
+        /// Create the info tree from this struct
+        /// </summary>
+        /// <returns>the info tree</returns>
+        public ItemInfoTree ToInfoTree()
+        {
+            ItemInfoTree tree = new ItemInfoTree();
+            foreach (var kvpair in IntValues)
+            {
+                tree.WriteInt(kvpair.key, kvpair.value);
+            }
+            foreach (var kvpair in StringValues)
+            {
+                tree.WriteString(kvpair.key, kvpair.value);
+            }
+            foreach (var kvpair in DoubleValues)
+            {
+                tree.WriteDouble(kvpair.key, kvpair.value);
+            }
+            foreach (var kvpair in IntArrayValues)
+            {
+                tree.WriteIntArray(kvpair.key, kvpair.value.ToArray());
+            }
+            foreach (var kvpair in TreeValues)
+            {
+                tree.WriteTree(kvpair.key, kvpair.value.ToInfoTree());
+            }
+            return tree;
+        }
+    }
+
     /// <summary>
     /// Tree structure used to store item information
     /// </summary>
@@ -123,6 +194,11 @@ namespace UniInventory.Items
                 Debug.LogException(e);
                 return null;
             }
+        }
+
+        public void UpdateWith(ItemInfoTree other)
+        {
+            other.dictionary.ToList().ForEach(x => this.dictionary[x.Key] = x.Value);
         }
 
 

@@ -29,5 +29,10 @@ namespace UniInventory.Items
                 stack.infoTree.WriteDouble("life", newLife);
             }
         }
+
+        public override Sprite GetSprite(ItemStack stack)
+        {
+            return SpriteReference.GetSprite("radioactive");
+        }
     }
 }

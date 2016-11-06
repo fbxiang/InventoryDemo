@@ -85,6 +85,11 @@ namespace UniInventory.Items {
             return other;
         }
 
+        /// <summary>
+        /// Split the item stack into two
+        /// </summary>
+        /// <param name="takeOut">the amount to take out from the stack</param>
+        /// <returns>null if nothing is produced</returns>
         public ItemStack Split(int takeOut)
         {
             if (takeOut <= 0)
@@ -104,9 +109,18 @@ namespace UniInventory.Items {
         /// Get the item object from registry
         /// </summary>
         /// <returns>the item corresponding to the item id</returns>
-        protected Item GetItem()
+        public Item GetItem()
         {
             return ItemRegistry.Instance.GetItem(itemId);
+        }
+
+        /// <summary>
+        /// Get the sprite of the current stack
+        /// </summary>
+        /// <returns>the sprite</returns>
+        public Sprite GetSprite()
+        {
+            return GetItem().GetSprite(this);
         }
     }
 }

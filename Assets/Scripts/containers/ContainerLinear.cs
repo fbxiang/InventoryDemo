@@ -7,22 +7,12 @@ using UniInventory.Items;
 
 namespace UniInventory.Container
 {
-
-    [System.Serializable]
-    public struct ItemStackInfo
-    {
-        public int itemId;
-        public int stackSize;
-    }
-
     /// <summary>
     /// One Implementation of the container class. Store items in a linear fashion
     /// </summary>
     public class ContainerLinear : ContainerBase
     {
         public int Capacity;
-        public List<ItemStackInfo> StacksInfo; // used to communicate with the inspector
-
         List<ItemStack> StoredStacks = new List<ItemStack>();
 
         /// <summary>
@@ -35,11 +25,10 @@ namespace UniInventory.Container
                 return StoredStacks.Count;
             }
         }
-        
-        // used to talk with the inspector
-        void Awake()
+
+        protected override void InitializeContainer(List<ItemStackInfo> stacksInfo)
         {
-            foreach (ItemStackInfo info in StacksInfo)
+            foreach (ItemStackInfo info in stacksInfo)
             {
                 StoredStacks.Add(new ItemStack(info.itemId, info.stackSize));
             }
@@ -110,20 +99,16 @@ namespace UniInventory.Container
             return StoredStacks;
         }
 
-        /// <summary>
-        /// Monobehavior method, called by the game controller
-        /// </summary>
-        public void Update()
+        public override void Update()
         {
-            StoredStacks.ForEach(stack => stack.Update(Time.deltaTime));
-            StoredStacks.RemoveAll(stack => stack.stackSize == 0);
+            base.Update();
         }
 
         /// <summary>
         /// My custom update function
         /// </summary>
         /// <param name="deltaTime">the delta time of this update</param>
-        public void Update(float deltaTime)
+        public override void Update(float deltaTime)
         {
             StoredStacks.ForEach(stack => stack.Update(deltaTime));
             StoredStacks.RemoveAll(stack => stack.stackSize == 0);

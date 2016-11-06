@@ -5,8 +5,28 @@ using System.Collections.Generic;
 
 namespace UniInventory.Container
 {
+
+    [System.Serializable]
+    public struct ItemStackInfo
+    {
+        public int itemId;
+        public int stackSize;
+        public InfoTreeInitializationObject infoTree;
+    }
+
+
     public abstract class ContainerBase : MonoBehaviour, IInventory
     {
+        public List<ItemStackInfo> StacksInfo;
+
+        
+        void Awake()
+        {
+            InitializeContainer(StacksInfo);
+        }
+
+        protected abstract void InitializeContainer(List<ItemStackInfo> stacksInfo);
+
         /// <summary>
         /// Get all stacks stored in the container
         /// </summary>
@@ -18,6 +38,13 @@ namespace UniInventory.Container
         /// <param name="stack">the item stack to addparam>
         /// <returns>if the stack is only partially added, return the remaining item stack</returns>
         public abstract ItemStack AddItemStack(ItemStack stack);
+
+        public abstract void Update(float deltaTime);
+
+        public virtual void Update()
+        {
+            Update(Time.deltaTime);
+        }
 
     }
 }

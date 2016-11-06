@@ -46,7 +46,14 @@ namespace UniInventory.Items {
         /// </summary>
         /// <param name="stack">the stack of the item</param>
         /// <param name="deltaTime">time elapsed from last update</param>
-        public virtual void OnUpdate(ItemStack stack, float deltaTime) { }   
+        public virtual void OnUpdate(ItemStack stack, float deltaTime) { }
+
+        /// <summary>
+        /// Get the sprite image of the item
+        /// </summary>
+        /// <param name="stack">the specific item stack</param>
+        /// <returns>the sprite</returns>
+        public virtual Sprite GetSprite(ItemStack stack) { return SpriteReference.GetSprite("default"); }
     }
 }
 
