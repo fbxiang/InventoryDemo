@@ -118,9 +118,9 @@ namespace UniInventory.Items {
         /// Get the sprite of the current stack
         /// </summary>
         /// <returns>the sprite</returns>
-        public Sprite GetSprite()
+        public Texture2D GetSprite()
         {
-            return GetItem().GetSprite(this);
+            return GetItem().GetIcon(this);
         }
     }
 }

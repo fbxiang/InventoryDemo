@@ -30,9 +30,9 @@ namespace UniInventory.Items
             }
         }
 
-        public override Sprite GetSprite(ItemStack stack)
+        public override Texture2D GetIcon(ItemStack stack)
         {
-            return SpriteReference.GetSprite("radioactive");
+            return Textures.RadioTexture;
         }
     }
 }

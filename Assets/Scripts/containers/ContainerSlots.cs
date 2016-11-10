@@ -6,14 +6,34 @@ using UniInventory.Items;
 
 namespace UniInventory.Container
 {
-
+    /// <summary>
+    /// The class representing a inventory slot that stores an item stack
+    /// </summary>
     class Slot
     {
-        public ItemStack Stack;
+        public ItemStack itemStack;
 
-        public bool Empty()
+        /// <summary>
+        /// Check if the slot is empty
+        /// </summary>
+        /// <returns>true if it is empty</returns>
+        public bool IsEmpty()
         {
-            return Stack == null;
+            return itemStack == null;
+        }
+
+        /// <summary>
+        /// Call this function to update the contained item stack with time
+        /// </summary>
+        /// <param name="deltaTime"></param>
+        public void Update(float deltaTime)
+        {
+            if (itemStack != null)
+            {
+                itemStack.Update(deltaTime);
+                if (itemStack.stackSize == 0)
+                    itemStack = null;
+            }
         }
     }
     public class ContainerSlots : ContainerBase
@@ -21,6 +41,16 @@ namespace UniInventory.Container
         public int Capacity = 10; // max capacity
 
         private Slot[] ItemSlots; // Item slots used to store item stacks
+
+        public ContainerSlots(int capacity=10)
+        {
+            this.Capacity = capacity;
+            ItemSlots = new Slot[Capacity];
+            for (int i = 0; i < ItemSlots.Length; i++)
+            {
+                ItemSlots[i] = new Slot();
+            }
+        }
 
         /// <summary>
         /// Initialization at awake. Create the desired container.
@@ -36,8 +66,8 @@ namespace UniInventory.Container
 
             for (int i = 0; i < Math.Min(stacksInfo.Count, Capacity); i++)
             {
-                ItemSlots[i].Stack = new ItemStack(stacksInfo[i].itemId, stacksInfo[i].stackSize);
-                ItemSlots[i].Stack.infoTree.UpdateWith(stacksInfo[i].infoTree.ToInfoTree());
+                ItemSlots[i].itemStack = new ItemStack(stacksInfo[i].itemId, stacksInfo[i].stackSize);
+                ItemSlots[i].itemStack.infoTree.UpdateWith(stacksInfo[i].infoTree.ToInfoTree());
             }
         }
 
@@ -53,7 +83,7 @@ namespace UniInventory.Container
                 Debug.LogWarning("[ContainerSlots] index out of bound");
                 return null;
             }
-            return ItemSlots[index].Stack;
+            return ItemSlots[index].itemStack;
         }
 
         /// <summary>
@@ -64,7 +94,7 @@ namespace UniInventory.Container
         {
             foreach (Slot slot in ItemSlots)
             {
-                if (slot.Empty())
+                if (slot.IsEmpty())
                     return slot;
             }
             return null;
@@ -80,16 +110,16 @@ namespace UniInventory.Container
             ItemStack remainder = stack;
             foreach (Slot slot in ItemSlots)
             {
-                if (!slot.Empty() && slot.Stack.mergeable(stack))
+                if (!slot.IsEmpty() && slot.itemStack.mergeable(stack))
                 {
-                    remainder = slot.Stack.mergeWith(stack);
+                    remainder = slot.itemStack.mergeWith(stack);
                     if (remainder == null) return null;
                 }
             }
             Slot emptySlot = FindFirstEmptySlot();
             if (emptySlot == null)
                 return remainder;
-            emptySlot.Stack = remainder;
+            emptySlot.itemStack = remainder;
             return null;
         }
 
@@ -102,9 +132,9 @@ namespace UniInventory.Container
             List<ItemStack> stacks = new List<ItemStack>();
             foreach (Slot slot in ItemSlots)
             {
-                if (!slot.Empty())
+                if (!slot.IsEmpty())
                 {
-                    stacks.Add(slot.Stack);
+                    stacks.Add(slot.itemStack);
                 }
             }
             return stacks;
@@ -118,16 +148,15 @@ namespace UniInventory.Container
             Update(Time.deltaTime);
         }
 
+        /// <summary>
+        /// Update the inventory with time
+        /// </summary>
+        /// <param name="deltaTime">time</param>
         public override void Update(float deltaTime)
         {
             foreach (Slot slot in ItemSlots)
             {
-                if (!slot.Empty())
-                {
-                    slot.Stack.Update(deltaTime);
-                    if (slot.Stack.stackSize == 0)
-                        slot.Stack = null;
-                }
+                slot.Update(deltaTime);
             }
         }
     }

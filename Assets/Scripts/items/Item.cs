@@ -53,7 +53,7 @@ namespace UniInventory.Items {
         /// </summary>
         /// <param name="stack">the specific item stack</param>
         /// <returns>the sprite</returns>
-        public virtual Sprite GetSprite(ItemStack stack) { return SpriteReference.GetSprite("default"); }
+        public virtual Texture2D GetIcon(ItemStack stack) { return Textures.DefaultTexture; }
     }
 }
 
