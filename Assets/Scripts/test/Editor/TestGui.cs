@@ -56,7 +56,7 @@ namespace UniInventory.Testing
 
             Assert.IsNotNull(container.GetItemStackAt(1)); // the items differ
 
-            container.Update(25);
+            container.Update(26);
             Assert.IsNull(container.GetItemStackAt(0));
             Assert.IsNotNull(container.GetItemStackAt(1)); // decay
 

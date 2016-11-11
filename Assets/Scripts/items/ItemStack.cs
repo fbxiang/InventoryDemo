@@ -18,12 +18,16 @@ namespace UniInventory.Items {
         {
             itemId = id;
             stackSize = size;
+            infoTree = new ItemInfoTree();
 
             Item item = GetItem();
             if (item == null)
             {
                 stackSize = 0;
             }
+
+            infoTree.WriteString("description", "");
+
             item.OnCreate(this);
         }
 
@@ -121,6 +125,15 @@ namespace UniInventory.Items {
         public Texture2D GetSprite()
         {
             return GetItem().GetIcon(this);
+        }
+
+        /// <summary>
+        /// Get the description of this item
+        /// </summary>
+        /// <returns></returns>
+        public string GetDescription()
+        {
+            return GetItem().GetDescription(this);
         }
     }
 }

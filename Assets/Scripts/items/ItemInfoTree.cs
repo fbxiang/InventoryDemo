@@ -40,6 +40,7 @@ namespace UniInventory.Items
     [System.Serializable]
     public class InfoTreeInitializationObject
     {
+        // All these structures are for communication with the inspector
         public List<IntBranch> IntValues = new List<IntBranch>();
         public List<StringBranch> StringValues = new List<StringBranch>();
         public List<DoubleBranch> DoubleValues = new List<DoubleBranch>();
@@ -195,7 +196,11 @@ namespace UniInventory.Items
                 return null;
             }
         }
-
+        
+        /// <summary>
+        /// Update the current tree with some other info tree
+        /// </summary>
+        /// <param name="other"></param>
         public void UpdateWith(ItemInfoTree other)
         {
             other.dictionary.ToList().ForEach(x => this.dictionary[x.Key] = x.Value);

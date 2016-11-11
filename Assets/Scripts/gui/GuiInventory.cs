@@ -3,6 +3,7 @@ using System.Collections;
 using UniInventory.Container;
 using UniInventory.Items;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace UniInventory.Gui
 {
@@ -114,12 +115,16 @@ namespace UniInventory.Gui
         /// <param name="slotsCount"></param>
         private void DrawSlots(int startX, int startY, int slotsCount)
         {
+            ItemStack tooltipStack = null;
+
             int xStride = SlotWidth + SlotPadding;
             int yStride = SlotHeight + SlotPadding;
 
             int itemIndex = 0;
-            for (int y = 0; y < SlotsPerRow; y++)
+            for (int y = 0; ; y++)
             {
+                if (itemIndex == slotsCount) break;
+
                 for (int x = 0; x < SlotsPerRow; x++)
                 {
                     Rect slotRect = new Rect(startX + x * xStride, startY + y * yStride, SlotWidth, SlotHeight);
@@ -141,15 +146,17 @@ namespace UniInventory.Gui
                         GUI.Label(new Rect(startX + x * xStride + SlotWidth / 2, startY + y * yStride + SlotHeight / 2, SlotWidth / 2, SlotHeight / 2), "" + itemCount);
                         if (slotRect.Contains(Event.current.mousePosition))
                         {
-                            DrawToolTip(GetItemStackAt(itemIndex));
+                            tooltipStack = GetItemStackAt(itemIndex);
                         }
                     }
 
                     itemIndex += 1;
                     if (itemIndex == slotsCount)
-                        return;
+                        break;
                 }
             }
+            if (tooltipStack != null)
+                DrawToolTip(tooltipStack);
         }
 
         /// <summary>
@@ -158,8 +165,13 @@ namespace UniInventory.Gui
         /// <param name="itemStack"></param>
         private void DrawToolTip(ItemStack itemStack)
         {
-            // TODO: finish this function
-            GUI.Box(new Rect(Event.current.mousePosition, new Vector2(200, 400)), itemStack.GetItem().itemName);
+            string name = "<color=#ffffffff>" + itemStack.GetItem().itemName + "</color>";
+            string description = "<color=#ccccccff>" + itemStack.GetDescription() + "</color>";
+
+            TooltipBuilder builder = new TooltipBuilder();
+            builder.AddText(name, "itemtitle");
+            builder.AddText(description, "description");
+            builder.buildToolTip();
         }
 
         /// <summary>
@@ -172,7 +184,6 @@ namespace UniInventory.Gui
                 DrawInventory();
             }
         }
-
 
         /// <summary>
         /// Update the inventory state
@@ -189,6 +200,77 @@ namespace UniInventory.Gui
             }
         }
     }
+    /// <summary>
+    /// This class builds up the tooltip of an item.
+    /// </summary>
+    class TooltipBuilder
+    {
+        /// <summary>
+        /// Storing all text required for the tooltip
+        /// </summary>
+        struct TooltipComponent
+        {
+            public string text;
+            public GUIStyle style;
+        }
+
+        public float marginLeft = 10, marginRight = 50, marginTop = 10, marginBottom = 10;
+        public float margin { set { marginLeft = marginRight = marginTop = marginBottom = value; } }
+
+        private List<TooltipComponent> components = new List<TooltipComponent>();
+
+        /// <summary>
+        /// Add a block of text to the tooltip
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="style"></param>
+        public void AddText(string text, string style="label")
+        {
+            TooltipComponent newComponent = new TooltipComponent();
+            newComponent.text = text;
+            newComponent.style = GUI.skin.GetStyle(style);
+            components.Add(newComponent);
+        }
+
+        /// <summary>
+        /// Build up the tooltip and display in the GUI.
+        /// </summary>
+        public void buildToolTip()
+        {
+            float width = 0, height = 0;
+            foreach (TooltipComponent component in components)
+            {
+                if (component.style.wordWrap) continue; // if it is willing to wrap, we do nothing
+                float minWidth, maxWidth;
+                component.style.CalcMinMaxWidth(new GUIContent(component.text), out minWidth, out maxWidth);
+                width = Mathf.Max(width, minWidth);
+            }
+            width += marginLeft + marginRight;
+            width = Mathf.Max(200, width);
+
+            foreach (TooltipComponent component in components)
+            {
+                height += component.style.CalcHeight(new GUIContent(component.text), width - marginLeft - marginRight);
+            }
+            height += marginBottom + marginTop;
+
+            Vector2 mousePosition = Event.current.mousePosition;
+
+            float startX = mousePosition.x + width >= Screen.width ? Screen.width - width : mousePosition.x;
+            float startY = mousePosition.y + height >= Screen.height ? Screen.height - height : mousePosition.y;
+
+            GUI.Box(new Rect(startX, startY, width, Mathf.Max(height, 200)), "", GUI.skin.GetStyle("tooltip"));
+
+            GUILayout.BeginArea(new Rect(startX + marginLeft, startY + marginTop, width - marginLeft - marginRight, height - marginTop - marginBottom));
+            GUILayout.BeginVertical();
+            foreach (TooltipComponent component in components)
+            {
+                GUILayout.Label(component.text, component.style);
+            }
+            GUILayout.EndVertical();
+            GUILayout.EndArea();
+        }
+    } 
 }
 
 
