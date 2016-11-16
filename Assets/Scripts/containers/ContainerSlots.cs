@@ -9,9 +9,16 @@ namespace UniInventory.Container
     /// <summary>
     /// The class representing a inventory slot that stores an item stack
     /// </summary>
-    class Slot
+    public class Slot
     {
         public ItemStack itemStack;
+
+        public static void SwapItemStacks(Slot s1, Slot s2)
+        {
+            ItemStack temp = s1.itemStack;
+            s1.itemStack = s2.itemStack;
+            s2.itemStack = temp;
+        }
 
         /// <summary>
         /// Check if the slot is empty
@@ -39,8 +46,9 @@ namespace UniInventory.Container
     public class ContainerSlots : ContainerBase
     {
         public int Capacity = 10; // max capacity
+        public int FocusedSlotIndex = 0;
 
-        private Slot[] ItemSlots; // Item slots used to store item stacks
+        public Slot[] ItemSlots; // Item slots used to store item stacks
 
         public ContainerSlots(int capacity=10)
         {
@@ -71,6 +79,13 @@ namespace UniInventory.Container
             }
         }
 
+        public Slot GetSlotAt(int index)
+        {
+            if (index < 0 || index >= Capacity)
+                return null;
+            return ItemSlots[index];
+        }
+
         /// <summary>
         /// Get the item stack at index
         /// </summary>
@@ -78,7 +93,7 @@ namespace UniInventory.Container
         /// <returns>item stack or null</returns>
         public ItemStack GetItemStackAt(int index)
         {
-            if (index < 0 || index > Capacity)
+            if (index < 0 || index >= Capacity)
             {
                 Debug.LogWarning("[ContainerSlots] index out of bound");
                 return null;
@@ -140,19 +155,12 @@ namespace UniInventory.Container
             return stacks;
         }
 
-        /// <summary>
-        /// Called every frame to update information
-        /// </summary>
-        public override void Update()
-        {
-            Update(Time.deltaTime);
-        }
 
         /// <summary>
         /// Update the inventory with time
         /// </summary>
         /// <param name="deltaTime">time</param>
-        public override void Update(float deltaTime)
+        public override void UpdateWith(float deltaTime)
         {
             foreach (Slot slot in ItemSlots)
             {

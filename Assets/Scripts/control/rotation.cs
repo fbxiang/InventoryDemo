@@ -9,7 +9,6 @@ public class rotation : MonoBehaviour {
 
     public bool flipYAxis = false;
 
-    bool rotateMode = false;
 
 	// Use this for initialization
 	void Start () {
@@ -17,15 +16,7 @@ public class rotation : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            rotateMode = !rotateMode;
-            Cursor.visible = !rotateMode;
-            Cursor.lockState = rotateMode ? CursorLockMode.Locked : CursorLockMode.None;
-        }
-
-        if (rotateMode)
+        if (!Cursor.visible)
         {
             float h = Input.GetAxis("Mouse X");
             float v = Input.GetAxis("Mouse Y");

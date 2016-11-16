@@ -17,6 +17,7 @@ namespace UniInventory.Registry {
         // item registry starts here
         public static Item ItemDebug = CreateAndRegisterItem<ItemDebug>(0);
         public static Item ItemRadioactive = CreateAndRegisterItem<ItemRadioactive>(1);
+        public static Item ItemBall = CreateAndRegisterItem<ItemBall>(2);
 
         static Item CreateAndRegisterItem<T>(int id) where T : Item
         {

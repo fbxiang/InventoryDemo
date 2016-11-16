@@ -112,7 +112,7 @@ namespace UniInventory.Testing
         [Test]
         public void TestRegisteredItems()
         {
-            Assert.IsTrue(ItemRegistry.Instance.items.Count == 2);
+            Assert.IsTrue(ItemRegistry.Instance.items.Count == 3);
             Assert.IsNull(ItemRegistry.Instance.GetItem(-1)); // test do not crash
             Assert.IsTrue(ItemRegistry.Instance.GetItem(0) is Item);
         }
@@ -179,6 +179,26 @@ namespace UniInventory.Testing
             Assert.IsTrue(stack2.mergeable(stack1));
             Assert.IsFalse(stack1.mergeable(stack3));
             Assert.IsFalse(stack4.mergeable(stack1));
+        }
+
+        public void TestTake()
+        {
+            ItemStack stack1 = new ItemStack(ItemRegistry.ItemRadioactive, 98);
+            ItemStack stack2 = new ItemStack(ItemRegistry.ItemRadioactive, 1);
+            Assert.IsNull(stack1.takeNumberReturnRemain(stack2, 1));
+            Assert.AreEqual(99, stack1.stackSize);
+
+            stack1 = new ItemStack(ItemRegistry.ItemRadioactive, 50);
+            stack2 = new ItemStack(ItemRegistry.ItemRadioactive, 52);
+
+            Assert.AreEqual(3, stack1.takeNumberReturnRemain(stack2, 53).stackSize);
+            Assert.AreEqual(99, stack1.stackSize);
+
+            stack1 = new ItemStack(ItemRegistry.ItemRadioactive, 50);
+            stack2 = new ItemStack(ItemRegistry.ItemRadioactive, 50);
+
+            Assert.AreEqual(3, stack1.takeNumberReturnRemain(stack2, 50).stackSize);
+            Assert.AreEqual(99, stack1.stackSize);
         }
 
         [Test]
@@ -260,9 +280,9 @@ namespace UniInventory.Testing
             Assert.IsNull(container.AddItemStack(new ItemStack(ItemRegistry.ItemRadioactive, 99)));
             Assert.IsNull(container.AddItemStack(new ItemStack(ItemRegistry.ItemRadioactive, 30)));
 
-            container.Update(10f);
+            container.UpdateWith(10f);
             Assert.AreEqual(20.0, container.GetItemStackAt(0).infoTree.ReadDouble("life")); // life decreased
-            container.Update(30f);
+            container.UpdateWith(30f);
             Assert.AreEqual(0, container.Count); // properly removed
 
         }

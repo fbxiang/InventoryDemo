@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UniInventory.Registry;
+using UniInventory.Entity;
 
 namespace UniInventory.Items {
     [System.Serializable]
@@ -11,6 +12,8 @@ namespace UniInventory.Items {
         public int itemId; // the id of the item the stack corresponds to
 
         public ItemInfoTree infoTree = new ItemInfoTree(); // the info tree to store stack specific information
+
+        private float useTime;
 
         public ItemStack(Item item, int size=1) : this(item.id, size) { }
 
@@ -71,6 +74,29 @@ namespace UniInventory.Items {
         }
 
         /// <summary>
+        /// Take some number of items from othe stack, return the remaing stack. Null if none remains.
+        /// If the number is larger than stack size of the other stack. The stack will be merged.
+        /// If the number will overflow the max stack size of this stack, take as many as possible.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <param name="number"></param>
+        /// <returns></returns>
+        public ItemStack takeNumberReturnRemain(ItemStack other, int number)
+        {
+            int maxStackSize = GetItem().maxStackSize;
+            if (other.stackSize <= number)
+                return mergeWith(other);
+            
+            if (this.stackSize + number > maxStackSize)
+            {
+                number = maxStackSize - this.stackSize;
+            }
+            this.stackSize += number;
+            other.stackSize -= number;
+            return other;
+        }
+
+        /// <summary>
         /// Called to merge the other stack with this stack. Only call it when the two stacks are mergeable.
         /// </summary>
         /// <param name="other">the stack to merge</param>
@@ -122,7 +148,7 @@ namespace UniInventory.Items {
         /// Get the sprite of the current stack
         /// </summary>
         /// <returns>the sprite</returns>
-        public Texture2D GetSprite()
+        public Texture2D GetIcon()
         {
             return GetItem().GetIcon(this);
         }
@@ -134,6 +160,23 @@ namespace UniInventory.Items {
         public string GetDescription()
         {
             return GetItem().GetDescription(this);
+        }
+
+        public void use(EntityLiving user, float deltaTime)
+        {
+            this.useTime += deltaTime;
+            if (useTime >= GetItem().GetMaxUseTime(this))
+            {
+                this.useTime = 0;
+                GetItem().OnUse(this, user);
+            }
+            else
+                GetItem().OnUsing(this, user, deltaTime, useTime);
+        }
+        
+        public void hold(EntityLiving user, float deltaTime)
+        {
+            this.useTime = 0;
         }
     }
 }

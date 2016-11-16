@@ -108,7 +108,7 @@ namespace UniInventory.Container
         /// My custom update function
         /// </summary>
         /// <param name="deltaTime">the delta time of this update</param>
-        public override void Update(float deltaTime)
+        public override void UpdateWith(float deltaTime)
         {
             StoredStacks.ForEach(stack => stack.Update(deltaTime));
             StoredStacks.RemoveAll(stack => stack.stackSize == 0);

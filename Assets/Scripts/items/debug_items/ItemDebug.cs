@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UniInventory.Registry;
+using UniInventory.Entity;
 
 namespace UniInventory.Items
 {

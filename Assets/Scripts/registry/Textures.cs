@@ -10,7 +10,7 @@ namespace UniInventory.Registry
     {
         public static Texture2D DefaultTexture = LoadItemTexture("default");
         public static Texture2D RadioTexture = LoadItemTexture("radioactive");
-
+        public static Texture2D BallTexture = LoadItemTexture("ball");
 
         public static Texture2D LoadItemTexture(string filename)
         {

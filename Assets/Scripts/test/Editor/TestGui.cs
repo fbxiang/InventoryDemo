@@ -50,17 +50,17 @@ namespace UniInventory.Testing
 
             container.AddItemStack(new ItemStack(ItemRegistry.ItemRadioactive, 10));
 
-            container.Update(5);
+            container.UpdateWith(5);
 
             container.AddItemStack(new ItemStack(ItemRegistry.ItemRadioactive, 10));
 
             Assert.IsNotNull(container.GetItemStackAt(1)); // the items differ
 
-            container.Update(26);
+            container.UpdateWith(26);
             Assert.IsNull(container.GetItemStackAt(0));
             Assert.IsNotNull(container.GetItemStackAt(1)); // decay
 
-            container.Update(8);
+            container.UpdateWith(8);
             Assert.IsNull(container.GetItemStackAt(1));
         }
     }

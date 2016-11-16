@@ -2,14 +2,11 @@
 using System.Collections;
 
 
-namespace UniInventory
+namespace UniInventory.Entity
 {
-    namespace Items
+    public interface IItemUser
     {
-        public interface IItemUser
-        {
-            void Use();
-        }
+        void Use();
     }
 }
 

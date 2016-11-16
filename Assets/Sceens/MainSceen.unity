@@ -2075,6 +2075,11 @@ GameObject:
   - 114: {fileID: 531225775}
   - 114: {fileID: 531225777}
   - 114: {fileID: 531225778}
+  - 114: {fileID: 531225781}
+  - 114: {fileID: 531225780}
+  - 114: {fileID: 531225779}
+  - 114: {fileID: 531225782}
+  - 114: {fileID: 531225783}
   m_Layer: 0
   m_Name: head_pivot
   m_TagString: Untagged
@@ -2146,7 +2151,7 @@ MonoBehaviour:
       IntValues: []
       StringValues:
       - key: description
-        value: Changed description!
+        value: This is a changed description.
       DoubleValues: []
       IntArrayValues: []
       TreeValues: []
@@ -2157,7 +2162,7 @@ MonoBehaviour:
       StringValues: []
       DoubleValues:
       - key: life
-        value: 10
+        value: 7
       IntArrayValues: []
       TreeValues: []
   - itemId: 1
@@ -2170,7 +2175,39 @@ MonoBehaviour:
         value: 20
       IntArrayValues: []
       TreeValues: []
+  - itemId: 2
+    stackSize: 5
+    infoTree:
+      IntValues: []
+      StringValues: []
+      DoubleValues:
+      - key: life
+        value: 20
+      IntArrayValues: []
+      TreeValues: []
+  - itemId: 2
+    stackSize: 10
+    infoTree:
+      IntValues: []
+      StringValues: []
+      DoubleValues:
+      - key: life
+        value: 20
+      IntArrayValues: []
+      TreeValues: []
+  - itemId: 2
+    stackSize: 126
+    infoTree:
+      IntValues: []
+      StringValues: []
+      DoubleValues:
+      - key: life
+        value: 20
+      IntArrayValues: []
+      TreeValues: []
+  timeRate: 1
   Capacity: 40
+  FocusedSlotIndex: 0
 --- !u!114 &531225778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2185,9 +2222,92 @@ MonoBehaviour:
   SlotWidth: 64
   SlotHeight: 64
   SlotPadding: 4
-  SlotsPerRow: 10
   itemSize: 48
   Skin: {fileID: 11400000, guid: 77c4f0c89ceb5ae4caa906af00ed5c40, type: 2}
+  SlotsPerRow: 10
+  anchor: 0
+--- !u!114 &531225779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 531225773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e829fe480c47c349b8b0f366867a86c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StacksInfo: []
+  timeRate: 1
+  itemStack:
+    stackSize: 0
+    itemId: 0
+--- !u!114 &531225780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 531225773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2af732cd1dcddc941a2d22469edf87c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SlotWidth: 64
+  SlotHeight: 64
+  SlotPadding: 8
+  itemSize: 48
+  Skin: {fileID: 11400000, guid: 77c4f0c89ceb5ae4caa906af00ed5c40, type: 2}
+--- !u!114 &531225781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 531225773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f141dfaeb9e9754d803d0c73e36c3d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StacksInfo:
+  - itemId: 1
+    stackSize: 23
+    infoTree:
+      IntValues: []
+      StringValues: []
+      DoubleValues: []
+      IntArrayValues: []
+      TreeValues: []
+  timeRate: 1
+  Capacity: 10
+  FocusedSlotIndex: 0
+--- !u!114 &531225782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 531225773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92651b17180ff9f41bd30acca7b38722, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemSizeOnCursor: 48
+  active: 0
+--- !u!114 &531225783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 531225773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 022be7c51c3ba584ea0dcda47330f8cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  life: 20
+  cam: {fileID: 1127833620}
+  guiController: {fileID: 0}
 --- !u!1 &1123497774
 GameObject:
   m_ObjectHideFlags: 0
@@ -2491,6 +2611,8 @@ GameObject:
   - 33: {fileID: 2097307179}
   - 65: {fileID: 2097307178}
   - 23: {fileID: 2097307177}
+  - 114: {fileID: 2097307181}
+  - 114: {fileID: 2097307182}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -2559,3 +2681,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
+--- !u!114 &2097307181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2097307176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da6a496a603a4a84699a47747908fe41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StacksInfo: []
+  timeRate: 0
+  Capacity: 40
+  FocusedSlotIndex: 0
+--- !u!114 &2097307182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2097307176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d21f6e83f9469554ca52e5b7e23d0eb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SlotWidth: 64
+  SlotHeight: 64
+  SlotPadding: 4
+  itemSize: 48
+  Skin: {fileID: 11400000, guid: 77c4f0c89ceb5ae4caa906af00ed5c40, type: 2}
+  SlotsPerRow: 10
+  anchor: 1

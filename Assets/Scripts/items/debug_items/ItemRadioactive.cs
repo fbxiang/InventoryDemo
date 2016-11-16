@@ -38,15 +38,7 @@ namespace UniInventory.Items
         public override string GetDescription(ItemStack stack)
         {
             double life = stack.infoTree.ReadDouble("life");
-            if (3 < life && life < 5)
-            {
-                return "You have less than 5 seconds left!";
-            }
-            if (life < 3)
-            {
-                return "Life remaining: " + life.ToString("0.00");
-            }
-            return "This substance is extremely dangerous. run!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!\nrun!";
+            return "Life remaining: " + life.ToString("0.00");
         }
     }
 }

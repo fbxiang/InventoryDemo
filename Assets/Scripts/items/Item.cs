@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UniInventory.Registry;
+using UniInventory.Entity;
 
 namespace UniInventory.Items {
     [System.Serializable]
@@ -9,6 +10,17 @@ namespace UniInventory.Items {
         public string itemName = "item"; // (unlocalized) name of the item
         public int maxStackSize = 1; // max stack size of the item
         public int id; // globally unique id of the item
+        public float maxUseTime = 1;
+
+        public virtual float GetMaxUseTime(ItemStack stack)
+        {
+            return maxUseTime;
+        }
+
+        public virtual void SetMaxUseTime(float time)
+        {
+            maxUseTime = time;
+        }
 
         public Item(int id)
         {
@@ -32,14 +44,14 @@ namespace UniInventory.Items {
         /// </summary>
         /// <param name="stack">the stack of the item</param>
         /// <param name="user">item user</param>
-        public virtual void OnUse(ItemStack stack, IItemUser user) { }
+        public virtual void OnUse(ItemStack stack, EntityLiving user) { }
 
         /// <summary>
         /// Called when a stack of this item is being used
         /// </summary>
         /// <param name="stack">the stack of the item</param>
         /// <param name="user">item user</param>
-        public virtual void OnUsing(ItemStack stack, IItemUser user) { }
+        public virtual void OnUsing(ItemStack stack, EntityLiving user, float DeltaTime, float TotalTime) { }
 
         /// <summary>
         /// Called whenever a stack of this item is updated

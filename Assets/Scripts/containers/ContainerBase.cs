@@ -19,7 +19,8 @@ namespace UniInventory.Container
     {
         public List<ItemStackInfo> StacksInfo;
 
-        
+        public float timeRate = 1; // defines the speed of time flow
+
         void Awake()
         {
             InitializeContainer(StacksInfo);
@@ -39,12 +40,12 @@ namespace UniInventory.Container
         /// <returns>if the stack is only partially added, return the remaining item stack</returns>
         public abstract ItemStack AddItemStack(ItemStack stack);
 
-        public abstract void Update(float deltaTime);
-
         public virtual void Update()
         {
-            Update(Time.deltaTime);
+            UpdateWith(Time.deltaTime * timeRate);
         }
+
+        public abstract void UpdateWith(float deltaTime);
 
     }
 }
