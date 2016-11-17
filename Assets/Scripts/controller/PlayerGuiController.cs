@@ -7,25 +7,33 @@ using UniInventory.Entity;
 
 namespace UniInventory.Gui
 {
+    /// <summary>
+    /// This class controls different gui and container components the player is interacting with
+    /// </summary>
     [RequireComponent(typeof(ContainerSlots), typeof(ContainerHotbar), typeof(GuiHotbar))]
     [RequireComponent(typeof(GuiInventory), typeof(ContainerCursor))]
     public class PlayerGuiController : MonoBehaviour
     {
-        public int itemSizeOnCursor;
-        private GuiHotbar guiHotbar;
-        private ContainerHotbar containerHotbar;
+        public int itemSizeOnCursor;  // displayed item size when it is on the mouse cursor
+        private GuiHotbar guiHotbar;  // the gui for the hotbar
+        private ContainerHotbar containerHotbar; // the container for the hotbar
 
-        private GuiInventory guiPlayerInventory;
-        private ContainerSlots containerPlayerInventory;
+        private GuiInventory guiPlayerInventory;  // the gui for the inventory on player
+        private ContainerSlots containerPlayerInventory;  // the container for the inventory on player
 
-        private GuiInventory guiOtherInventory;
-        private ContainerSlots containerOtherInventory;
+        private GuiInventory guiOtherInventory;  // the gui of the other inventory player opens
+        private ContainerSlots containerOtherInventory;  // the container of the other inventory
 
-        private ContainerCursor containerCursor;
+        private ContainerCursor containerCursor;  // the container to store a single item stack on mouse cursor
 
-        public bool active;
+        private EntityPlayer player;  // player itself
 
-        void Awake()
+        public bool active;  // gui is active
+
+        /// <summary>
+        /// Initialize all components
+        /// </summary>
+        void Start()
         {
             guiHotbar = GetComponent<GuiHotbar>();
             containerHotbar = GetComponent<ContainerHotbar>();
@@ -34,21 +42,35 @@ namespace UniInventory.Gui
             containerPlayerInventory = GetComponent<ContainerSlots>();
 
             containerCursor = GetComponent<ContainerCursor>();
+
+            player = GetComponent<EntityPlayer>();
         }
 
+        /// <summary>
+        /// Set the other inventory the player interact with
+        /// </summary>
+        /// <param name="gui"></param>
+        /// <param name="container"></param>
         public void setOther(GuiInventory gui, ContainerSlots container)
         {
             this.guiOtherInventory = gui;
             this.containerOtherInventory = container;
         }
 
+        /// <summary>
+        /// Reset the other inventory to nothing
+        /// </summary>
         public void resetOther()
         {
             this.guiOtherInventory = null;
             this.containerOtherInventory = null;
         }
 
-
+        /// <summary>
+        /// Get the current container where player can interact with
+        /// </summary>
+        /// <param name="gui">output the gui</param>
+        /// <param name="container">output the container</param>
         private void GetCurrent(out GuiSlotsBase gui, out ContainerSlots container)
         {
             gui = null; container = null;
@@ -57,6 +79,9 @@ namespace UniInventory.Gui
             if (guiOtherInventory != null && guiOtherInventory.CursorOverGui()) { gui = guiOtherInventory; container = containerOtherInventory; }
         }
 
+        /// <summary>
+        /// Draw stuff, handle mouse and keyboard events
+        /// </summary>
         void OnGUI()
         {
             guiHotbar.UpdateDisplay(containerHotbar.ItemSlots, containerHotbar.FocusedSlotIndex);
@@ -83,7 +108,11 @@ namespace UniInventory.Gui
             GuiSlotsBase.DrawItemStack(containerCursor.itemStack, Event.current.mousePosition.x, Event.current.mousePosition.y, itemSizeOnCursor);
         }
 
-        private int GetNumberPressed()
+        /// <summary>
+        /// Get the number key down event
+        /// </summary>
+        /// <returns>the number key pressed or -1 if no key pressed</returns>
+        private int GetNumberKeyDown()
         {
             EntityPlayer player = GetComponent<EntityPlayer>();
             for (int i = 0; i < 10; i++)
@@ -96,17 +125,31 @@ namespace UniInventory.Gui
             return -1;
         }
 
+        /// <summary>
+        /// Convert the number key to the index of slot in the hotbar
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
         private int GetHotbarIndexFromNumber(int number)
         {
             return (number + 9) % 10;
         }
 
-        private void changeHotbarFocus(int numberPressed)
+        /// <summary>
+        /// Set the focus in hotbar to the number key
+        /// </summary>
+        /// <param name="numberKey"></param>
+        private void changeHotbarFocus(int numberKey)
         {
-            if (numberPressed >= 0 && numberPressed < 10)
-                GetComponent<ContainerHotbar>().FocusedSlotIndex = GetHotbarIndexFromNumber(numberPressed);
+            if (numberKey >= 0 && numberKey < 10)
+                GetComponent<ContainerHotbar>().FocusedSlotIndex = GetHotbarIndexFromNumber(numberKey);
         }
 
+        /// <summary>
+        /// Handle the mouse click event when the gui is open
+        /// </summary>
+        /// <param name="currentContainer"></param>
+        /// <param name="slotIndex"></param>
         private void handleMouseClick(ContainerSlots currentContainer, int slotIndex)
         {
             if (slotIndex >= 0 && slotIndex < currentContainer.Capacity)
@@ -125,6 +168,11 @@ namespace UniInventory.Gui
             }
         }
 
+        /// <summary>
+        /// Handle the mouse wheel event when gui is open
+        /// </summary>
+        /// <param name="currentContainer">current container</param>
+        /// <param name="slotIndex">the slot mouse is over</param>
         private void handleMouseWheel(ContainerSlots currentContainer, int slotIndex)
         {
             if (Input.GetAxis("Mouse ScrollWheel") > 0f)
@@ -159,14 +207,29 @@ namespace UniInventory.Gui
             }
         }
 
-        private void setGuiOpenState(bool active)
+        /// <summary>
+        /// Open or close the gui
+        /// </summary>
+        /// <param name="open"></param>
+        private void setGuiOpen(bool open)
         {
-            if (!active)
+            if (!open)
                 resetOther();
-            this.active = active;
-            Cursor.visible = active;
+            else
+            {
+                if (player.LookObject != null && player.LookObject.GetComponent<ContainerSlots>() != null)
+                {
+                    containerOtherInventory = player.LookObject.GetComponent<ContainerSlots>();
+                    guiOtherInventory = player.LookObject.GetComponent<GuiInventory>();
+                }
+            }
+            this.active = open;
+            Cursor.visible = open;
         }
 
+        /// <summary>
+        /// Called to notify the item stack that is is being used
+        /// </summary>
         private void useFocusedItem()
         {
             if (containerHotbar.FocusedSlotIndex >= 0 && containerHotbar.FocusedSlotIndex < 10)
@@ -177,6 +240,9 @@ namespace UniInventory.Gui
             }
         }
 
+        /// <summary>
+        /// Called to notify the item stack that is is being held but not used
+        /// </summary>
         private void holdFocusedItem()
         {
             if (containerHotbar.FocusedSlotIndex >= 0 && containerHotbar.FocusedSlotIndex < 10)
@@ -187,14 +253,17 @@ namespace UniInventory.Gui
             }
         }
 
+        /// <summary>
+        /// update the events and call helper functions
+        /// </summary>
         void Update()
         {
             EntityPlayer player = GetComponent<EntityPlayer>();
             if (player.Key.Down("inventory"))
-                setGuiOpenState(!active);
+                setGuiOpen(!active);
             Cursor.lockState = active ? CursorLockMode.None : CursorLockMode.Locked;
 
-            int numberPressed = GetNumberPressed();
+            int numberPressed = GetNumberKeyDown();
             int slotIndexPressed = (numberPressed + 9) % 10;
             if (!active)
             {

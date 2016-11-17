@@ -13,6 +13,14 @@ namespace UniInventory.Entity
                 return transform.position;
             }
         }
+
+        public Vector3 LookVector
+        {
+            get
+            {
+                return transform.forward;
+            }
+        }
     }
 }
 

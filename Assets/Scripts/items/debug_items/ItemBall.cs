@@ -11,6 +11,7 @@ namespace UniInventory.Items
         {
             maxStackSize = 128;
             itemName = "little ball";
+            maxUseTime = 0.3f;
         }
 
         public override void OnCreate(ItemStack stack)

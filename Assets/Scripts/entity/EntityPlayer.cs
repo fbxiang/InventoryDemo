@@ -32,13 +32,19 @@ namespace UniInventory.Entity
     }
 
 
-    [RequireComponent(typeof(PlayerGuiController))]
+    [RequireComponent(typeof(PlayerGuiController), typeof(HudController))]
     public class EntityPlayer : EntityLiving
     {
-        public Camera cam;
-        public PlayerGuiController guiController;
+        public Camera cam;  // main camera
+        PlayerGuiController guiController;  // the gui controller
 
-        public KeyBinding Key = new KeyBinding();
+        public GameObject LookObject { get; private set; }  // the object the player is looking at
+
+        public KeyBinding Key = new KeyBinding();  // key binding of current player
+
+        /// <summary>
+        /// Initialize variables and key bindings
+        /// </summary>
         void Awake()
         {
             guiController = GetComponent<PlayerGuiController>();
@@ -52,19 +58,20 @@ namespace UniInventory.Entity
         }
 
 
-        void OnGUI()
-        {
-        }
-
+        /// <summary>
+        /// Update the object the player is looking at
+        /// </summary>
         void Update()
         {
             RaycastHit hit;
             Ray ray = new Ray(cam.transform.position, cam.transform.forward);
-            if (Physics.Raycast(ray, out hit, 20) && hit.transform.GetComponent<ContainerSlots>() != null)
+            if (Physics.Raycast(ray, out hit, 20))
             {
-                ContainerSlots container = hit.transform.GetComponent<ContainerSlots>();
-                GuiInventory gui = hit.transform.GetComponent<GuiInventory>();
-                guiController.setOther(gui, container);
+                LookObject = hit.transform.gameObject;
+            }
+            else
+            {
+                LookObject = null;
             }
         }
     }

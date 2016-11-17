@@ -66,7 +66,12 @@ namespace UniInventory.Items {
         /// <param name="stack">the specific item stack</param>
         /// <returns>the sprite</returns>
         public virtual Texture2D GetIcon(ItemStack stack) { return Textures.DefaultTexture; }
-
+        
+        /// <summary>
+        /// Get the description displayed on the tool tip
+        /// </summary>
+        /// <param name="stack">the item stack containing this item</param>
+        /// <returns>the string description (rich text)</returns>
         public virtual string GetDescription(ItemStack stack)
         {
             string description = stack.infoTree.ReadString("description");

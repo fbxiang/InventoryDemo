@@ -13,7 +13,7 @@ namespace UniInventory.Items {
 
         public ItemInfoTree infoTree = new ItemInfoTree(); // the info tree to store stack specific information
 
-        private float useTime;
+        public float useTime;
 
         public ItemStack(Item item, int size=1) : this(item.id, size) { }
 
@@ -162,6 +162,11 @@ namespace UniInventory.Items {
             return GetItem().GetDescription(this);
         }
 
+        /// <summary>
+        /// Called by the controller to notify the item stack that it has been used for a certain amount of time
+        /// </summary>
+        /// <param name="user">user of thte item</param>
+        /// <param name="deltaTime">the user time from last update</param>
         public void use(EntityLiving user, float deltaTime)
         {
             this.useTime += deltaTime;
@@ -174,6 +179,11 @@ namespace UniInventory.Items {
                 GetItem().OnUsing(this, user, deltaTime, useTime);
         }
         
+        /// <summary>
+        /// Called by controller to notify the item stack that it has been hold for a certain amount of time
+        /// </summary>
+        /// <param name="user">holder of the item</param>
+        /// <param name="deltaTime">the hold time of from last update</param>
         public void hold(EntityLiving user, float deltaTime)
         {
             this.useTime = 0;

@@ -241,6 +241,21 @@ namespace UniInventory.Testing
             Assert.IsFalse(stack1.mergeable(stack2));
         }
 
+        [Test]
+        public void TestUseHold()
+        {
+            ItemStack stack1 = new ItemStack(ItemRegistry.ItemBall, 13);
+            Assert.AreEqual(0, stack1.useTime);
+            stack1.use(null, 0.1f);
+            Assert.AreEqual(0.1f, stack1.useTime);
+
+            stack1.hold(null, 0.1f);
+            Assert.AreEqual(0, stack1.useTime);
+
+            stack1.use(null, 0.1f); stack1.use(null, 0.25f);
+            Assert.AreEqual(12, stack1.stackSize);
+        }
+
     }
 
     public class TestContainerLinear
