@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using UniInventory.Registry;
 using UniInventory.Entity;
+using System.Linq;
 
 namespace UniInventory.Items {
     [System.Serializable]
@@ -153,6 +154,11 @@ namespace UniInventory.Items {
             return GetItem().GetIcon(this);
         }
 
+        public AudioClip GetClickSound()
+        {
+            return GetItem().GetClickSound(this);
+        }
+
         /// <summary>
         /// Get the description of this item
         /// </summary>
@@ -163,11 +169,47 @@ namespace UniInventory.Items {
         }
 
         /// <summary>
-        /// Called by the controller to notify the item stack that it has been used for a certain amount of time
+        /// Get the acutal title to be displayed (rich text)
         /// </summary>
-        /// <param name="user">user of thte item</param>
-        /// <param name="deltaTime">the user time from last update</param>
-        public void use(EntityLiving user, float deltaTime)
+        /// <returns></returns>
+        public string GetDisplayTitle()
+        {
+            string changedName = infoTree.ReadString("title");
+            if (changedName != null) return changedName;
+            else return GetItem().itemName;
+        }
+
+        /// <summary>
+        /// Get the subtitle to be displayed under title (rich text)
+        /// </summary>
+        /// <returns></returns>
+        public string GetDisplaySubtitle()
+        {
+            string subtitle = infoTree.ReadString("subtitle");
+            return subtitle != null ? subtitle : "";
+        }
+
+        /// <summary>
+        /// Get the ids and powers of all attached abilities
+        /// </summary>
+        /// <returns>a list of key value pair representing the id and power of the ability</returns>
+        public List<KeyValuePair<string, int>> GetAbilityIdPowers()
+        {
+            ItemInfoTree abilityTree = infoTree.ReadTree("abilities");
+            if (abilityTree == null) return new List<KeyValuePair<string, int>>();
+            List<KeyValuePair<string, int>> abilities = abilityTree.dictionary
+                .Where(kvp => kvp.Value is int)
+                .Select(kvp=>new KeyValuePair<string, int>(kvp.Key, (int)kvp.Value)).ToList();
+            return abilities;
+        }
+
+
+    /// <summary>
+    /// Called by the controller to notify the item stack that it has been used for a certain amount of time
+    /// </summary>
+    /// <param name="user">user of thte item</param>
+    /// <param name="deltaTime">the user time from last update</param>
+    public void Use(EntityLiving user, float deltaTime)
         {
             this.useTime += deltaTime;
             if (useTime >= GetItem().GetMaxUseTime(this))
@@ -184,7 +226,7 @@ namespace UniInventory.Items {
         /// </summary>
         /// <param name="user">holder of the item</param>
         /// <param name="deltaTime">the hold time of from last update</param>
-        public void hold(EntityLiving user, float deltaTime)
+        public void Hold(EntityLiving user, float deltaTime)
         {
             this.useTime = 0;
         }

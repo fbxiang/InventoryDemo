@@ -2,6 +2,7 @@
 using System.Collections;
 using UniInventory.Registry;
 using UniInventory.Entity;
+using gameplay;
 
 namespace UniInventory.Items
 {
@@ -28,6 +29,12 @@ namespace UniInventory.Items
         {
             Debug.Log("Item used");
             stack.stackSize -= 1;
+
+            GameObject ball = Object.Instantiate(Objects.BallStatic);
+            ball.transform.position = user.Position;
+            ball.GetComponent<Rigidbody>().velocity = user.LookVector;
+            ball.GetComponent<Renderer>().material.SetColor("_Color", Random.ColorHSV(0, 1, 0.1f, 0.4f, 0.9f, 1f));
+            ball.SetActive(true);
         }
 
         public override void OnUsing(ItemStack stack, EntityLiving user, float DeltaTime, float TotalTime)

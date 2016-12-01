@@ -13,16 +13,7 @@ namespace UniInventory.Gui
     {
         public int SlotsPerRow = 10;
 
-        private bool cursorOverGui;
         private int cursorOverSlot;
-
-        public enum Anchor {LEFT, RIGHT };
-        public Anchor anchor;
-
-        public override bool CursorOverGui()
-        {
-            return cursorOverGui;
-        }
 
         public override int CursorOverSlot()
         {
@@ -34,22 +25,23 @@ namespace UniInventory.Gui
         /// </summary>
         public void UpdateDisplay(Slot[] slots)
         {
-            cursorOverGui = false;
+            DrawBackground();
+
             cursorOverSlot = -1;
 
-            GUI.skin = Skin;
-            int totalHeight = Screen.height;
-            int totalWidth = 800;
-            int startX = anchor == Anchor.LEFT ? 0 : Screen.width - totalWidth, startY = 0;
-            Rect guiRect = new Rect(startX, startY, totalWidth, totalHeight);
+            float totalHeight = windowSize.y;
+            float totalWidth = windowSize.x;
+            float startX = startPosition.x;
+            float startY = startPosition.y;
+
+            Rect guiRect = new Rect(startPosition, windowSize);
             GUI.Box(guiRect, "", Skin.GetStyle("background"));
-            cursorOverGui = guiRect.Contains(Event.current.mousePosition);
 
             int slotsCount = slots.Length;
             int rowCount = (int)Mathf.Ceil(slotsCount / (float)SlotsPerRow);
 
-            int slotsStartX = startX + (totalWidth - (SlotWidth * SlotsPerRow + SlotPadding * (SlotsPerRow - 1))) / 2;
-            int slotsStartY = startY + totalHeight - 64 - (rowCount * SlotHeight + (rowCount - 1) * SlotPadding);
+            float slotsStartX = startX + (totalWidth - (slotWidth * SlotsPerRow + slotPadding * (SlotsPerRow - 1))) / 2;
+            float slotsStartY = startY + totalHeight - 64 - (rowCount * slotHeight + (rowCount - 1) * slotPadding);
 
             DrawSlots(slots, slotsStartX, slotsStartY, slotsCount);
         }
@@ -60,10 +52,10 @@ namespace UniInventory.Gui
         /// <param name="startX"></param>
         /// <param name="startY"></param>
         /// <param name="slotsCount"></param>
-        private void DrawSlots(Slot[] slots, int startX, int startY, int slotsCount)
+        private void DrawSlots(Slot[] slots, float startX, float startY, int slotsCount)
         {
-            int xStride = SlotWidth + SlotPadding;
-            int yStride = SlotHeight + SlotPadding;
+            float xStride = slotWidth + slotPadding;
+            float yStride = slotHeight + slotPadding;
 
             int slotIndex = 0;
             for (int y = 0; ; y++)
@@ -72,16 +64,16 @@ namespace UniInventory.Gui
 
                 for (int x = 0; x < SlotsPerRow; x++)
                 {
-                    Rect slotRect = new Rect(startX + x * xStride, startY + y * yStride, SlotWidth, SlotHeight);
+                    Rect slotRect = new Rect(startX + x * xStride, startY + y * yStride, slotWidth, slotHeight);
 
-                    int itemPaddingWidth = (SlotWidth - itemSize) / 2;
-                    int itemPaddingHeight = (SlotHeight - itemSize) / 2;
+                    float itemPaddingWidth = (slotWidth - itemSize) / 2;
+                    float itemPaddingHeight = (slotHeight - itemSize) / 2;
 
                     Rect itemRect = new Rect(startX + x * xStride + itemPaddingWidth, startY + y * yStride + itemPaddingHeight, itemSize, itemSize);
 
                     GUI.Box(slotRect, "", Skin.GetStyle("slot"));
 
-                    DrawItemStack(GetItemStackAt(slots, slotIndex), startX + x * xStride + SlotWidth/2, startY + y * yStride + SlotHeight/2, itemSize);
+                    DrawItemStack(GetItemStackAt(slots, slotIndex), startX + x * xStride + slotWidth/2, startY + y * yStride + slotHeight/2, itemSize);
 
                     if (slotRect.Contains(Event.current.mousePosition))
                     {

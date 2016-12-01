@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using System.Xml.Serialization;
+using System.Xml;
+using System.Xml.Schema;
+using System.Text;
 
 namespace UniInventory.Items
 {
@@ -16,6 +20,7 @@ namespace UniInventory.Items
     public struct StringBranch
     {
         public string key;
+        [TextArea(1, 10)]
         public string value;
     }
     [System.Serializable]
@@ -82,9 +87,9 @@ namespace UniInventory.Items
     /// Tree structure used to store item information
     /// </summary>
     [System.Serializable]
-    public class ItemInfoTree : ICloneable
+    public class ItemInfoTree : ICloneable, IXmlSerializable
     {
-        public Dictionary<string, object> dictionary = new Dictionary<string, object>(); // dictionary used to store all data
+        public Dictionary<string, object> dictionary = new Dictionary<string, object>(); // dictionary used to store all 
 
         public ItemInfoTree() { }
         public object Clone()
@@ -120,7 +125,6 @@ namespace UniInventory.Items
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
                 return null;
             }
         }
@@ -138,7 +142,6 @@ namespace UniInventory.Items
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
                 return 0;
             }
         }
@@ -156,7 +159,6 @@ namespace UniInventory.Items
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
                 return 0.0;
             }
         }
@@ -174,7 +176,6 @@ namespace UniInventory.Items
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
                 return null;
             }
         }
@@ -192,7 +193,6 @@ namespace UniInventory.Items
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
                 return null;
             }
         }
@@ -249,6 +249,136 @@ namespace UniInventory.Items
                 hash += key.GetHashCode();
             }
             return hash;
+        }
+
+        /// <summary>
+        /// the required function for serialization
+        /// </summary>
+        /// <returns></returns>
+        public XmlSchema GetSchema()
+        {
+            throw null;
+        }
+
+        /// <summary>
+        /// read tree properties from xml file
+        /// </summary>
+        /// <param name="reader"></param>
+        public void ReadXml(XmlReader reader)
+        {
+            Console.WriteLine("start read");
+            reader.MoveToContent();
+            reader.ReadStartElement("infoTree");
+            while (reader.IsStartElement())
+            {
+                Console.WriteLine("type: " + reader.GetAttribute("type") + " key: " + reader.GetAttribute("key"));
+                string key = reader.GetAttribute("key");
+                string type = reader.GetAttribute("type");
+                reader.ReadStartElement();
+
+                switch (type)
+                {
+                    case "int":
+                        int intVal = reader.ReadContentAsInt();
+                        WriteInt(key, intVal);
+                        Console.WriteLine(intVal);
+                        break;
+                    case "text":
+                        string value = reader.ReadContentAsString();
+                        WriteString(key, value);
+                        Console.WriteLine(value);
+                        break;
+                    case "double":
+                        double doubleVal = reader.ReadContentAsDouble();
+                        WriteDouble(key, doubleVal);
+                        Console.WriteLine(doubleVal);
+                        break;
+                    case "intArray":
+                        List<int> intList = new List<int>();
+                        while (reader.IsStartElement())
+                        {
+                            reader.ReadStartElement("value");
+                            int elem = reader.ReadContentAsInt();
+                            Console.WriteLine(elem);
+                            intList.Add(elem);
+                            reader.ReadEndElement();
+                        }
+                        WriteIntArray(key, intList.ToArray());
+                        break;
+                    case "tree":
+                        ItemInfoTree subTree = new ItemInfoTree();
+                        subTree.ReadXml(reader);
+                        WriteTree(key, subTree);
+                        break;
+                }
+                reader.ReadEndElement();
+            }
+            reader.ReadEndElement();
+        }
+
+        /// <summary>
+        /// Write all tree properties to xml file
+        /// </summary>
+        /// <param name="writer"></param>
+        public void WriteXml(XmlWriter writer)
+        {
+            writer.WriteStartElement("infoTree");
+
+            foreach (var kvpair in dictionary)
+            {
+                string typeName = getTypeString(kvpair.Value);
+                writer.WriteStartElement("item");
+                writer.WriteAttributeString("type", typeName);
+                writer.WriteAttributeString("key", kvpair.Key);
+
+                switch (typeName)
+                {
+                    case "intArray":
+                        foreach (int x in (int[])kvpair.Value)
+                        {
+                            writer.WriteStartElement("value");
+                            writer.WriteString(x.ToString());
+                            writer.WriteEndElement();
+                        }
+                        break;
+                    case "tree":
+                        StringBuilder builder = new StringBuilder();
+                        XmlWriter subTreeWriter = XmlWriter.Create(builder);
+                        ((ItemInfoTree)kvpair.Value).WriteXml(writer);
+                        break;
+                    default:
+                        writer.WriteString(kvpair.Value.ToString());
+                        break;
+                }
+                writer.WriteEndElement();
+            }
+            writer.WriteEndElement();
+        }
+
+        /// <summary>
+        /// Helper function to get the string represented value type given the value object
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private static String getTypeString(object value)
+        {
+            if (value.GetType().Equals(typeof(int)))
+            {
+                return "int";
+            }
+            else if (value.GetType().Equals(typeof(string)))
+            {
+                return "text";
+            }
+            else if (value.GetType().Equals(typeof(double)))
+            {
+                return "double";
+            }
+            else if (value.GetType().Equals(typeof(int[])))
+            {
+                return "intArray";
+            }
+            return "tree";
         }
     }
 }

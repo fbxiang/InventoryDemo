@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using UniInventory.Gui;
+
 public class rotation : MonoBehaviour {
 
     public float rotationSpeed = 1f;
@@ -16,11 +18,11 @@ public class rotation : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (!Cursor.visible)
+        if (!GetComponent<PlayerGuiController>().active)
         {
             float h = Input.GetAxis("Mouse X");
             float v = Input.GetAxis("Mouse Y");
-            gameObject.transform.Rotate((flipXAxis?-1:1) * Vector3.up * Time.deltaTime * h * rotationSpeed, Space.World);
+            gameObject.transform.Rotate((flipXAxis ? -1 : 1) * Vector3.up * Time.deltaTime * h * rotationSpeed, Space.World);
             gameObject.transform.Rotate((flipYAxis ? -1 : 1) * Vector3.right * Time.deltaTime * v * rotationSpeed);
         }
 	}

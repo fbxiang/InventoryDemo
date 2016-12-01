@@ -17,6 +17,7 @@ namespace UniInventory.Items {
             return maxUseTime;
         }
 
+
         public virtual void SetMaxUseTime(float time)
         {
             maxUseTime = time;
@@ -66,7 +67,17 @@ namespace UniInventory.Items {
         /// <param name="stack">the specific item stack</param>
         /// <returns>the sprite</returns>
         public virtual Texture2D GetIcon(ItemStack stack) { return Textures.DefaultTexture; }
-        
+
+        /// <summary>
+        /// Get the sound of this object when picked up or placed down
+        /// </summary>
+        /// <param name="stack">the item stack</param>
+        /// <returns>the sound</returns>
+        public virtual AudioClip GetClickSound(ItemStack stack)
+        {
+            return SoundEffects.DefaultSound;
+        }
+
         /// <summary>
         /// Get the description displayed on the tool tip
         /// </summary>

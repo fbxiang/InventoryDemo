@@ -2,16 +2,30 @@
 using System.Collections.Generic;
 using UniInventory.Items;
 using UniInventory.Container;
+using UniInventory.Registry;
+using System.Linq;
 
 namespace UniInventory.Gui
 {
-    public abstract class GuiSlotsBase : MonoBehaviour
+    public abstract class GuiSlotsBase : GuiWindowBase
     {
-        public int SlotWidth = 32, SlotHeight = 32;
-        public int SlotPadding = 4;
-        public int itemSize;
+        public float slotWidthInches = 0.5f, slotHeightInches = 0.5f;
+        public float slotPaddingInches = 0.05f;
+        public float itemSizeInches = 0.4f;
 
-        public GUISkin Skin;
+        protected float slotWidth, slotHeight;
+        protected float slotPadding;
+        protected float itemSize;
+
+        public override void Awake()
+        {
+            base.Awake();
+            slotWidth = slotWidthInches * Screen.dpi;
+            slotHeight = slotHeightInches * Screen.dpi;
+            slotPadding = slotPaddingInches * Screen.dpi;
+            itemSize = itemSizeInches * Screen.dpi;
+        }
+
 
         protected ItemStack GetItemStackAt(Slot[] slots, int index)
         {
@@ -37,17 +51,11 @@ namespace UniInventory.Gui
             GUI.DrawTexture(new Rect(startX, startY, itemSize, itemSize), icon);
 
             Vector2 size = GUI.skin.GetStyle("label").CalcSize(new GUIContent("" + itemCount));
-            Vector2 labelStart = new Vector2(centerX + itemSize / 2, centerY + itemSize / 2) - size *2 / 3;
+            Vector2 labelStart = new Vector2(centerX + itemSize / 2, centerY + itemSize / 2) - size * 2 / 3;
 
             GUI.Label(new Rect(labelStart, size), "" + itemCount);
 
         }
-
-        /// <summary>
-        /// Get if the cursor is hovring over this GUI
-        /// </summary>
-        /// <returns></returns>
-        public abstract bool CursorOverGui();
 
         /// <summary>
         /// Get the slot index the mouse is currently hovering over, -1 if mouse is elsewhere
@@ -62,12 +70,28 @@ namespace UniInventory.Gui
         public static void DrawToolTip(ItemStack itemStack)
         {
             if (itemStack == null) return;
-            string name = "<color=#ffffffff>" + itemStack.GetItem().itemName + "</color>";
-            string description = "<color=#ccccccff>" + itemStack.GetDescription() + "</color>";
+            string description = itemStack.GetDescription();
 
             TooltipBuilder builder = new TooltipBuilder();
-            builder.AddText(name, "itemtitle");
+            builder.AddText(itemStack.GetDisplayTitle(), "itemtitle");
+            builder.AddText(itemStack.GetDisplaySubtitle(), "itemSubtitle");
             builder.AddText(description, "description");
+
+            List<KeyValuePair<string, int>> abilityPriorityList = new List<KeyValuePair<string, int>>();
+            foreach (var kvp in itemStack.GetAbilityIdPowers())
+            {
+                string id = kvp.Key; int power = kvp.Value;
+                string text = AbilityRegistry.GetAbilityDisplayText(id);
+                string color = AbilityRegistry.GetAbilityDisplayColor(id);
+                int priority = AbilityRegistry.GetAbilityDisplayPriority(id);
+                string displayText = "<color=" + color + ">" + text + " " + power + "</color>";
+                abilityPriorityList.Add(new KeyValuePair<string, int>(displayText, priority));
+            }
+
+            foreach (var kvp in abilityPriorityList.OrderBy(kvp => -kvp.Value))
+            {
+                builder.AddText(kvp.Key, "ability");
+            }
             builder.buildToolTip();
         }
     }
@@ -94,10 +118,11 @@ namespace UniInventory.Gui
         /// <summary>
         /// Add a block of text to the tooltip
         /// </summary>
-        /// <param name="text"></param>
+        /// <param name="text">nullable text, null would have no effect</param>
         /// <param name="style"></param>
         public void AddText(string text, string style = "label")
         {
+            if (text == null) return;
             TooltipComponent newComponent = new TooltipComponent();
             newComponent.text = text;
             newComponent.style = GUI.skin.GetStyle(style);
@@ -131,7 +156,7 @@ namespace UniInventory.Gui
             float startX = mousePosition.x + width >= Screen.width ? Screen.width - width : mousePosition.x;
             float startY = mousePosition.y + height >= Screen.height ? Screen.height - height : mousePosition.y;
 
-            GUI.Box(new Rect(startX, startY, width, Mathf.Max(height, 200)), "", GUI.skin.GetStyle("tooltip"));
+            GUI.Box(new Rect(startX, startY, width, height), "", GUI.skin.GetStyle("tooltip"));
 
             GUILayout.BeginArea(new Rect(startX + marginLeft, startY + marginTop, width - marginLeft - marginRight, height - marginTop - marginBottom));
             GUILayout.BeginVertical();

@@ -14,7 +14,7 @@ namespace UniInventory.Gui
     [RequireComponent(typeof(GuiInventory), typeof(ContainerCursor))]
     public class PlayerGuiController : MonoBehaviour
     {
-        public int itemSizeOnCursor;  // displayed item size when it is on the mouse cursor
+        public float itemSizeOnCursor;  // displayed item size when it is on the mouse cursor
         private GuiHotbar guiHotbar;  // the gui for the hotbar
         private ContainerHotbar containerHotbar; // the container for the hotbar
 
@@ -105,7 +105,7 @@ namespace UniInventory.Gui
                     GuiSlotsBase.DrawToolTip(currentContainer.GetItemStackAt(slotIndex));
                 }
             }
-            GuiSlotsBase.DrawItemStack(containerCursor.itemStack, Event.current.mousePosition.x, Event.current.mousePosition.y, itemSizeOnCursor);
+            GuiSlotsBase.DrawItemStack(containerCursor.itemStack, Event.current.mousePosition.x, Event.current.mousePosition.y, itemSizeOnCursor * Screen.dpi);
         }
 
         /// <summary>
@@ -157,10 +157,15 @@ namespace UniInventory.Gui
                 Slot slot = currentContainer.GetSlotAt(slotIndex);
                 if (containerCursor.itemStack != null && slot.itemStack != null && slot.itemStack.mergeable(containerCursor.itemStack))
                 {
+                    player.playerAudio.PlayOneShot(containerCursor.itemStack.GetClickSound());
                     containerCursor.itemStack = slot.itemStack.mergeWith(containerCursor.itemStack);
                 }
                 else
                 {
+                    if (containerCursor.itemStack != null || slot.itemStack != null)
+                    {
+                        player.playerAudio.PlayOneShot((containerCursor.itemStack != null? containerCursor.itemStack : slot.itemStack).GetClickSound());
+                    }
                     ItemStack tempStack = containerCursor.itemStack;
                     containerCursor.itemStack = slot.itemStack;
                     slot.itemStack = tempStack;
@@ -236,7 +241,7 @@ namespace UniInventory.Gui
             {
                 ItemStack stack = containerHotbar.GetItemStackAt(containerHotbar.FocusedSlotIndex);
                 if (stack == null) return;
-                stack.use(GetComponent<EntityPlayer>(), Time.deltaTime);
+                stack.Use(GetComponent<EntityPlayer>(), Time.deltaTime);
             }
         }
 
@@ -249,7 +254,7 @@ namespace UniInventory.Gui
             {
                 ItemStack stack = containerHotbar.GetItemStackAt(containerHotbar.FocusedSlotIndex);
                 if (stack == null) return;
-                stack.hold(GetComponent<EntityPlayer>(), Time.deltaTime);
+                stack.Hold(GetComponent<EntityPlayer>(), Time.deltaTime);
             }
         }
 
@@ -259,7 +264,10 @@ namespace UniInventory.Gui
         void Update()
         {
             EntityPlayer player = GetComponent<EntityPlayer>();
-            if (player.Key.Down("inventory"))
+
+            if (player.Key.Down("close"))
+                setGuiOpen(false);
+            else if (player.Key.Down("inventory"))
                 setGuiOpen(!active);
             Cursor.lockState = active ? CursorLockMode.None : CursorLockMode.Locked;
 

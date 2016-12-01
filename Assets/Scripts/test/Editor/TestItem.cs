@@ -246,13 +246,13 @@ namespace UniInventory.Testing
         {
             ItemStack stack1 = new ItemStack(ItemRegistry.ItemBall, 13);
             Assert.AreEqual(0, stack1.useTime);
-            stack1.use(null, 0.1f);
+            stack1.Use(null, 0.1f);
             Assert.AreEqual(0.1f, stack1.useTime);
 
-            stack1.hold(null, 0.1f);
+            stack1.Hold(null, 0.1f);
             Assert.AreEqual(0, stack1.useTime);
 
-            stack1.use(null, 0.1f); stack1.use(null, 0.25f);
+            stack1.Use(null, 0.1f); stack1.Use(null, 0.25f);
             Assert.AreEqual(12, stack1.stackSize);
         }
 

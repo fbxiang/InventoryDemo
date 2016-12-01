@@ -11,7 +11,6 @@ namespace UniInventory.Container
     /// </summary>
     public class ContainerCursor : ContainerBase
     {
-        //TODO: test this class
         public ItemStack itemStack = null;        
 
         protected override void InitializeContainer(List<ItemStackInfo> stacksInfo)
@@ -23,6 +22,10 @@ namespace UniInventory.Container
             }
         }
 
+        /// <summary>
+        /// This function returns the only stack in this container
+        /// </summary>
+        /// <returns></returns>
         public override List<ItemStack> GetItemStacks()
         {
             List<ItemStack> list = new List<ItemStack>();
@@ -31,6 +34,11 @@ namespace UniInventory.Container
             return list;
         }
 
+        /// <summary>
+        /// The stack only goes to the only one possible slot
+        /// </summary>
+        /// <param name="stack"></param>
+        /// <returns></returns>
         public override ItemStack AddItemStack(ItemStack stack)
         {
             if (this.itemStack == null)
@@ -38,10 +46,17 @@ namespace UniInventory.Container
                 this.itemStack = stack;
                 return null;
             }
+            else if (this.itemStack.mergeable(stack))
+            {
+                return this.itemStack.mergeWith(stack);
+            }
             return stack;
         }
 
-
+        /// <summary>
+        /// Update the container with time
+        /// </summary>
+        /// <param name="deltaTime"></param>
         public override void UpdateWith(float deltaTime)
         {
             if (this.itemStack != null)

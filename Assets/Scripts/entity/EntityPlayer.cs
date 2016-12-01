@@ -6,9 +6,9 @@ namespace UniInventory.Entity
 {
     public class KeyBinding
     {
-        Dictionary<string, string> KeyRegistry = new Dictionary<string, string>();
+        Dictionary<string, KeyCode> KeyRegistry = new Dictionary<string, KeyCode>();
 
-        public void Register(string keyName, string keyValue)
+        public void Register(string keyName, KeyCode keyValue)
         {
             KeyRegistry[keyName] = keyValue;
         }
@@ -32,11 +32,13 @@ namespace UniInventory.Entity
     }
 
 
-    [RequireComponent(typeof(PlayerGuiController), typeof(HudController))]
+    [RequireComponent(typeof(PlayerGuiController), typeof(HudController), typeof(AudioSource))]
     public class EntityPlayer : EntityLiving
     {
         public Camera cam;  // main camera
         PlayerGuiController guiController;  // the gui controller
+
+        public AudioSource playerAudio { get; private set; }
 
         public GameObject LookObject { get; private set; }  // the object the player is looking at
 
@@ -48,13 +50,15 @@ namespace UniInventory.Entity
         void Awake()
         {
             guiController = GetComponent<PlayerGuiController>();
+            playerAudio = GetComponent<AudioSource>();
 
-            Key.Register("inventory", "e");
+            Key.Register("inventory", KeyCode.E);
             for (int i = 0; i < 10; i++)
             {
-                Key.Register(i.ToString(), i.ToString());
+                Key.Register(i.ToString(), (KeyCode)System.Enum.Parse(typeof(KeyCode), "Alpha" + i));
             }
-            Key.Register("use", "r");
+            Key.Register("use", KeyCode.R);
+            Key.Register("close", KeyCode.Escape);
         }
 
 

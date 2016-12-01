@@ -2,6 +2,8 @@
 using System.Collections;
 using UniInventory.Registry;
 
+using System.Linq;
+
 namespace UniInventory.Items
 {
     public class ItemRadioactive : Item
@@ -32,7 +34,13 @@ namespace UniInventory.Items
 
         public override Texture2D GetIcon(ItemStack stack)
         {
-            return Textures.RadioTexture;
+            Texture2D[] textures = Textures.radioTextureGroup;
+
+            float rateOfChange = 0.1f;
+            int currentFrame = (int) (Time.time / rateOfChange);
+            int idx = currentFrame % textures.Length;
+
+            return textures[idx];
         }
 
         public override string GetDescription(ItemStack stack)
